@@ -6,6 +6,7 @@ import click
 @click.version_option()
 def main() -> None:
     """Anki for Luxembourgish."""
+    print("I'm running!")
 
 
 if __name__ == "__main__":
