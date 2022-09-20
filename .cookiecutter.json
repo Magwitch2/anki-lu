@@ -1,0 +1,14 @@
+{
+  "_output_dir": "/Users/terry",
+  "_template": "gh:cjolowicz/cookiecutter-hypermodern-python",
+  "author": "Terry Hanold",
+  "copyright_year": "2022",
+  "development_status": "Development Status :: 1 - Planning",
+  "email": "terry.hanold@gmail.com",
+  "friendly_name": "Anki for Luxembourgish",
+  "github_user": "Magwitch2",
+  "license": "MIT",
+  "package_name": "anki_lu",
+  "project_name": "anki-lu",
+  "version": "0.0.0"
+}
