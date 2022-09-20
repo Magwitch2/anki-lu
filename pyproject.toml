@@ -16,8 +16,10 @@ classifiers = [
 Changelog = "https://github.com/Magwitch2/anki-lu/releases"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = ">=3.9 <4.0"
 click = ">=8.0.1"
+pylint = "^2.15.3"
+flake8-for-pycharm = "^0.4.1"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"
