@@ -1,5 +1,6 @@
 {
   "anki": {
-    "deck": "/Users/terry/Programming/anki-lux/data/Lëtzebuergesch.apkg"
+    "zip_path": "/Users/terry/Desktop/Lëtzebuergesch.apkg",
+    "deck_suffix": ".anki21"
   }
 }
