@@ -37,16 +37,16 @@ class Handler:
                 file_ext: str = "." + file.filename.split(".")[-1]
                 if file_ext == config.anki.deck_suffix:
                     self.working_deck = self._working_dir / file.filename
-                    self._working_deck_create_time = os.stat(
-                        self.working_deck
-                    ).st_mtime
+                    self._working_deck_create_time = os.stat(self.working_deck).st_mtime
                     self._anki_export_compress_level = file.compress_type
-        if self.working_deck == Path(""):
-            raise FileNotFoundError(
-                f"No {config.anki.deck_suffix} file found in \
-                {self._working_zip.name} file"
-            )
         self._working_zip.unlink()
+        if self.working_deck == Path(""):
+            self._clean_up()
+            raise FileNotFoundError(f"No {config.anki.deck_suffix} file found in " "{self._working_zip.name} file")
+
+    def _clean_up(self) -> None:
+        """Cleans up all dirs and files created by instance"""
+        shutil.rmtree(self._working_dir)
 
     def __del__(self) -> None:
         """Cleans-up temp files, and (if needed) exports updated Anki file."""
@@ -66,4 +66,4 @@ class Handler:
                 for file_path in self._working_dir.iterdir():
                     new_archive.write(file_path, arcname=file_path.name)
 
-        shutil.rmtree(self._working_dir)
+        self._clean_up()

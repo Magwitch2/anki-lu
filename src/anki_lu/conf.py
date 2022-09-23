@@ -18,7 +18,8 @@ class Configuration(BaseModel, allow_mutation=False):
         anki (dict): kwargs for anki module config
     """
 
-    data_root: Path = Path(__file__).parents[2].joinpath(data_dir_name)
+    # data_root: Path = Path(__file__).parents[2].joinpath(data_dir_name)
+    data_root: Path = Path(".")
     anki: conf.Configuration
 
 
