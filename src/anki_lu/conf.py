@@ -4,10 +4,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from anki_lu.anki import conf
-
-config_file_path: Path = Path("/Users/terry/anki-lu/src/anki_lu/config.json")
-data_dir_name: Path = Path("data")
+from anki import conf as anki_conf
 
 
 class Configuration(BaseModel, allow_mutation=False):
@@ -18,9 +15,5 @@ class Configuration(BaseModel, allow_mutation=False):
         anki (dict): kwargs for anki module config
     """
 
-    # data_root: Path = Path(__file__).parents[2].joinpath(data_dir_name)
     data_root: Path = Path(".")
-    anki: conf.Configuration
-
-
-config = Configuration.parse_file(config_file_path)
+    anki: anki_conf.Configuration

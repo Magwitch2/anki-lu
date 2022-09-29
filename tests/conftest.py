@@ -1,1 +1,1 @@
-"""Config file for anki-lu tests"""
+"""Config file for anki-lu tests."""
