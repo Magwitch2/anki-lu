@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from anki import conf as anki_conf
+from anki_lu.anki import conf as anki_conf
 
 
 class Configuration(BaseModel, allow_mutation=False):

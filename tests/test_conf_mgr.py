@@ -3,7 +3,7 @@
 import shutil
 from pathlib import Path
 from tempfile import mkdtemp
-from typing import Any
+from typing import Any, Iterator
 
 import pytest
 
@@ -11,18 +11,18 @@ from anki_lu import conf_mgr
 
 
 @pytest.fixture()
-def conf_dir_struct() -> dict:
+def conf_dir_struct() -> Iterator[dict[str, Any]]:
     """Creates a mock package directory, seeded with conf and json files."""
-    data: list = [
-        ["string_key", "string_value with SPACES."],
-        ["path_key", "/Users/terry/Desktop/Lëtzebuergesch.apkg"],
+    data: list[tuple[str, str]] = [
+        ("string_key", "string_value with SPACES."),
+        ("path_key", "/Users/terry/Desktop/Lëtzebuergesch.apkg"),
     ]
     data_file_name: str = "test_config.json"
     module_name: str = "test_conf"
     model_name: str = "TestConfiguration"
     pkg_path: str = mkdtemp(dir=Path(__file__).parent)
     with open(f"{pkg_path}/__init__.py", "x") as f:
-        f.write("makes directory a package")
+        f.write("'''Makes directory a package.'''")
     with open(f"{pkg_path}/{data_file_name}", "x") as f:
         f.write("{")
         f.write(f'"{data[0][0]}": "{data[0][1]}", ')
@@ -45,7 +45,7 @@ def conf_dir_struct() -> dict:
     shutil.rmtree(pkg_path)
 
 
-def test_get_config_obj(conf_dir_struct) -> None:
+def test_get_config_obj(conf_dir_struct: dict[str, Any]) -> None:
     """Tests happy path.
 
     GIVEN: valid package structure, data file, and conf module
@@ -58,7 +58,7 @@ def test_get_config_obj(conf_dir_struct) -> None:
         module=conf_dir_struct["module_name"],
         model=conf_dir_struct["model_name"],
     )
-    data: list[str, Any] = conf_dir_struct["config_data"]
+    data: list[tuple[str, Any]] = conf_dir_struct["config_data"]
     for k, v in data:
         try:
             if k.startswith("path"):
@@ -68,35 +68,34 @@ def test_get_config_obj(conf_dir_struct) -> None:
             raise KeyError(f"{err}: key is not an attribute in model") from err
 
 
-def test_get_config_with_bad_module(conf_dir_struct) -> None:
+def test_get_config_with_bad_module(conf_dir_struct: dict[str, Any]) -> None:
     """Tests missing/wrong module.
 
     GIVEN a flawed project structure, with missing conf module
     WHEN get_config is called
     THEN a NameError exception is raised
     """
-    with pytest.raises(NameError) as excinfo:
+    with pytest.raises((ModuleNotFoundError, FileNotFoundError)) as err:
         test_config = conf_mgr.get_config_obj(  # noqa: F841
             data=conf_dir_struct["data_path"],
             pkg_dir=Path(conf_dir_struct["pkg_path"]),
             module="doesnt_exist",
             model=conf_dir_struct["model_name"],
         )
-    assert "not found" in str(excinfo.value)
+    assert err.value
 
 
-def test_get_config_with_bad_class(conf_dir_struct) -> None:
+def test_get_config_with_bad_class(conf_dir_struct: dict[str, Any]) -> None:
     """Tests missing/wrong configuration class.
 
     GIVEN a flawed project structure, with mis-named config class
     WHEN get_config is called
     THEN a NameError exception is raised
     """
-    with pytest.raises(NameError) as excinfo:
+    with pytest.raises(NameError):
         test_config = conf_mgr.get_config_obj(  # noqa: F841
             data=conf_dir_struct["data_path"],
             pkg_dir=Path(conf_dir_struct["pkg_path"]),
             module=conf_dir_struct["module_name"],
             model="doesnt_exist",
         )
-    assert "not found in" in str(excinfo.value)

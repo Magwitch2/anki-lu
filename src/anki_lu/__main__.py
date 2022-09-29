@@ -3,8 +3,8 @@ from pathlib import Path
 
 import click
 
+from anki_lu.conf import Configuration
 from anki_lu.conf_mgr import get_config_obj
-from .conf import Configuration
 
 _config_path: Path = Path("config.json")
 conf: Configuration
