@@ -26,7 +26,7 @@ class Handler:
         self._anki_export_file: Path = conf.zip_path
         self._work_zip: Path = self._work_dir / conf.zip_path.name
         self._zip_comp_lvl: int = 8  # re-zipping compression (deflate mode)
-        self.deck: Path = Path("")
+        self.deck: Path = Path("not found")
         self._deck_cr_time: float = 0
         self._new_zip: Path = self._work_dir / "new_zip"
         self._set_up()
@@ -43,7 +43,7 @@ class Handler:
                     self._deck_cr_time = time()
                     self._zip_comp_lvl = file.compress_type
         self._work_zip.unlink()
-        if self.deck == Path(""):
+        if self.deck == Path("not found"):
             self._clean_up()
             raise FileNotFoundError(
                 f"No {self._conf.deck_suffix} file found in "
