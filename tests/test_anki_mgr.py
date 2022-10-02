@@ -21,12 +21,16 @@ def mock_artifacts() -> Configuration:  # type: ignore[misc]
     Returns: conf object, which includes path to mocked artifacts.
     """
     w_dir: Path = Path(mkdtemp())
-    mkstemp(dir=w_dir, suffix=_m_deck_sfx)  # deck file
-    mkstemp(dir=w_dir)  # random other resource
+    deck: Path = Path(mkstemp(dir=w_dir, suffix=_m_deck_sfx)[-1])  # deck file
+    other: Path = Path(mkstemp(dir=w_dir)[-1])  # random other resource
     zip_pkg: Path = w_dir.joinpath(_m_zip_name)
     with ZipFile(zip_pkg, mode="w") as z:
         for f in w_dir.iterdir():
+            if f.suffix == Path(_m_zip_name).suffix:
+                continue
             z.write(f, arcname=f.name)
+    deck.unlink()
+    other.unlink()
 
     conf: Configuration = Configuration.parse_obj(
         {
@@ -63,18 +67,32 @@ def test_export_of_changed_file(mock_artifacts: Configuration) -> None:
     GIVEN a changed Anki deck file,
     WHEN anki handler shuts down,
     THEN
-        an updated anki package is in original directory,
-        the original anki package is renamed and present in same directory.
+        an updated anki archive is in original directory,
+        the original anki archive is renamed and present in same directory,
+        the same files, with the same names, are in both archives,
+        the <deck> file is the only one that has been modified.
     """
-    handler: mgr.Handler = mgr.Handler(mock_artifacts)
-    timestamp: float = os.stat(mock_artifacts.zip_path).st_mtime
+    conf: Configuration = mock_artifacts
+    handler: mgr.Handler = mgr.Handler(conf)
+    pkg: Path = conf.zip_path
+    timestamp: float = os.stat(pkg).st_mtime
     with open(handler.deck, mode="a") as f:
         f.write("Something changed.")
     handler.__del__()
-    assert os.stat(mock_artifacts.zip_path).st_mtime > timestamp
+    assert os.stat(pkg).st_mtime > timestamp
 
-    old_pkg_name: str = str(mock_artifacts.zip_path.stem) + mgr._orig_pkg_flag
-    assert mock_artifacts.zip_path.with_stem(old_pkg_name).exists()
+    old_pkg_name: str = str(conf.zip_path.stem) + mgr._orig_pkg_flag
+    old_pkg: Path = conf.zip_path.with_stem(old_pkg_name)
+    assert old_pkg.exists()
+
+    with ZipFile(pkg, mode="r") as new, ZipFile(old_pkg, "r") as old:
+        old_names: set[str] = set(old.namelist())
+        assert old_names == set(new.namelist())
+        for name in old_names:
+            if name.split(".")[-1] == conf.deck_suffix:
+                continue
+            assert old.getinfo(name).date_time == new.getinfo(name).date_time
+        print(old_names)
 
 
 def test_unchanged_files_not_exported(mock_artifacts: Configuration) -> None:
