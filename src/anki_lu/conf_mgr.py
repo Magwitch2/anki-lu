@@ -51,15 +51,15 @@ def get_config_obj(
         spec.loader.exec_module(c_module)  # type: ignore[union-attr]
     except FileNotFoundError as exc:
         raise FileNotFoundError(
-            f"{exc}: run from <test>, {module} could " "not be imported"
+            f"{exc}: run from <test>, {module} could not be imported"
         ) from exc
 
-    c_model: BaseModel | None = None
+    c_model: BaseModel = BaseModel()
     for n, v in getmembers(c_module):
         if n == model:
             c_model = v
             break
-    if not c_model:
+    if c_model == BaseModel():
         raise NameError(f"{model} not found in {module}")
 
     # no tests written for try block, pydantic handles validation/errors

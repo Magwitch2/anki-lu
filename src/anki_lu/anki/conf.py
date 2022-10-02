@@ -4,7 +4,7 @@ from pathlib import Path
 from pydantic import BaseModel, validator
 
 
-class Configuration(BaseModel, allow_mutation=False):
+class Configuration(BaseModel):
     """Config data for managing local Anki artifacts."""
 
     zip_path: Path
@@ -15,8 +15,8 @@ class Configuration(BaseModel, allow_mutation=False):
         cls, v: str  # noqa: B902,N805 (pydantic)
     ) -> str:
         """Consistent with output of Path.suffix methods."""
-        if v.count('.') > 1:
+        if v.count(".") > 1:
             #  TODO: raise error and handle in UI
             pass
-        v = v.replace('.', '')
+        v = v.replace(".", "")
         return v

@@ -21,7 +21,8 @@ click = ">=8.0.1"
 pylint = ">=2.15.3"
 flake8-for-pycharm = ">=0.4.1"
 pydantic = ">=1.10.2"
-mutmut = "^2.4.1"
+mutmut = ">=2.4.1"
+nox = "^2022.8.7"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"

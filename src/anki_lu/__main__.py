@@ -11,7 +11,8 @@ from anki_lu.conf_mgr import get_config_obj
 @click.version_option()
 def main() -> None:
     """Anki for Luxembourgish."""
-    conf: Configuration = get_config_obj()
+    # TODO refactor conf_mgr to simplify, also avoid assignment flag
+    conf: Configuration = get_config_obj()  # type: ignore[assignment]
     deck: Handler = Handler(conf.anki)
     print(deck)
 

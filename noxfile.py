@@ -233,11 +233,3 @@ def docs(session: Session) -> None:
         shutil.rmtree(build_dir)
 
     session.run("sphinx-autobuild", *args)
-
-
-@session(python=python_versions[0])
-def mutmut(session: Session) -> None:
-    """Mutate code to check test coverage."""
-    session.install(".")
-    session.install("mutmut", "pytest")
-    session.run("mutmut", "run")
