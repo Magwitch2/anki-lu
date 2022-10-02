@@ -1,7 +1,5 @@
 """Top-level configuration for anki-lu program."""
 
-from pathlib import Path
-
 from pydantic import BaseModel
 
 from anki_lu.anki import conf as anki_conf
@@ -15,5 +13,4 @@ class Configuration(BaseModel, allow_mutation=False):
         anki (dict): kwargs for anki module config
     """
 
-    data_root: Path = Path(".")
     anki: anki_conf.Configuration
